@@ -1,0 +1,20 @@
+<table>
+<tr>
+    <th>name</th>
+    <th>phone1</th>
+    <th>phone2</th>
+    <th>outcome</th>
+</tr>
+{% if calls_list %}
+    {% for call in calls_list %}
+        <tr>
+            <td><a href="/calls/{{ call.id }}/">{{ call.lead.name }}</a></td>
+            <td>{{ call.lead.phone1 }}</td>
+            <td>{{ call.lead.phone2 }}</td>
+            <td>{{ call.outcome }}</td>
+        </tr>
+    {% endfor %}
+{% else %}
+    <p>No calls.</p>
+{% endif %}
+</table>

@@ -4,6 +4,7 @@ import phonenumbers
 
 
 def prettify_datetime(dt):
+    dt = timezone.localtime(dt)
     return str(dt.date()) + ' at ' + dt.time().strftime('%I:%M %p')
 
 def format_phone(phone):
@@ -14,6 +15,9 @@ def format_phone(phone):
 
 def format_name(name):
     return name.strip().title()
+
+def get_local_time():
+    return timezone.localtime(timezone.now())
 
 
 class LeadType(models.Model):
@@ -36,12 +40,20 @@ class Lead(models.Model):
     phone2 = models.CharField(blank=True, max_length=20)
     spouse = models.CharField(blank=True, max_length=200)
 
-    dnc = models.BooleanField('Do not call this lead', default=False)
+    dnc = models.BooleanField('Do not call', default=False)
     status = models.ForeignKey(LeadStatus, default='Cold')
     type = models.ForeignKey(LeadType, default='Expired')
     notes = models.TextField(blank=True)
 
-    created = models.DateTimeField('When was the lead discovered?', default=timezone.now)
+    created = models.DateTimeField('Discovered', default=timezone.now)
+
+    def can_call(self):
+        return not self.dnc
+    can_call.boolean = True
+    can_call.admin_order_field = 'dnc'
+
+    def call_count(self):
+        return len(Call.objects.filter(lead=self))
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -75,8 +87,8 @@ class CallOutcome(models.Model):
 class Call(models.Model):
     lead = models.ForeignKey(Lead)
     outcome = models.ForeignKey(CallOutcome, default='Missed')
-    date = models.DateTimeField('When was the call was placed?', default=timezone.now)
-    scheduled = models.DateTimeField('If the call was rescheduled, when to?', blank=True, null=True, default=None)
+    date = models.DateTimeField('placed', default=timezone.now)
+    scheduled = models.DateTimeField('rescheduled to', blank=True, null=True, default=None)
     notes = models.TextField(blank=True)
 
     def __str__(self):
