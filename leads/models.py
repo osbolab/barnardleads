@@ -45,7 +45,7 @@ class Lead(models.Model):
     type = models.ForeignKey(LeadType, default='Expired')
     notes = models.TextField(blank=True)
 
-    created = models.DateTimeField('Discovered', default=timezone.now)
+    created = models.DateTimeField('discovered', default=timezone.now)
 
     def can_call(self):
         return not self.dnc
@@ -84,8 +84,16 @@ class CallOutcome(models.Model):
         return self.outcome
 
 
+class CallDirection(models.Model):
+    direction = models.CharField(primary_key=True, max_length=20)
+
+    def __str__(self):
+        return self.direction
+
+
 class Call(models.Model):
     lead = models.ForeignKey(Lead)
+    direction = models.ForeignKey(CallDirection, default='Outgoing')
     outcome = models.ForeignKey(CallOutcome, default='Missed')
     date = models.DateTimeField('placed', default=timezone.now)
     scheduled = models.DateTimeField('rescheduled to', blank=True, null=True, default=None)
