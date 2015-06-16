@@ -109,21 +109,29 @@
     <table name="leads_call" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="date" sqlType="DATETIME" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <column name="scheduled" sqlType="DATETIME" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
       <column name="notes" sqlType="TEXT" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="lead_id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
       <column name="outcome_id" sqlType="VARCHAR(20)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
-      <column name="scheduled" sqlType="DATETIME" precision="2000000000" scale="10" nullable="true" jdbcType="12"/>
+      <column name="direction_id" sqlType="VARCHAR(20)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="id"/>
-      <foreign-key name="#FAKE_leads_call_1" columns="outcome_id" ref-table="leads_calloutcome" ref-schema="" ref-catalog="" ref-columns="outcome" update-rule="3" delete-rule="3" deferrability="1"/>
-      <foreign-key name="#FAKE_leads_call_2" columns="lead_id" ref-table="leads_lead" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_leads_call_1" columns="direction_id" ref-table="leads_calldirection" ref-schema="" ref-catalog="" ref-columns="direction" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_leads_call_2" columns="outcome_id" ref-table="leads_calloutcome" ref-schema="" ref-catalog="" ref-columns="outcome" update-rule="3" delete-rule="3" deferrability="1"/>
+      <foreign-key name="#FAKE_leads_call_3" columns="lead_id" ref-table="leads_lead" ref-schema="" ref-catalog="" ref-columns="id" update-rule="3" delete-rule="3" deferrability="1"/>
+      <index name="leads_call_06609aa2" unique="true" columns="direction_id"/>
       <index name="leads_call_24da0f2b" unique="true" columns="outcome_id"/>
       <index name="leads_call_8f635513" unique="true" columns="lead_id"/>
+    </table>
+    <table name="leads_calldirection" schema="" catalog="" type="TABLE">
+      <column name="direction" sqlType="VARCHAR(20)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
+      <primary-key columns="direction"/>
+      <exported-key name="#FAKE_leads_call_1" table="leads_call" schema="" catalog="" columns="direction_id"/>
     </table>
     <table name="leads_calloutcome" schema="" catalog="" type="TABLE">
       <column name="outcome" sqlType="VARCHAR(20)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <column name="past_tense" sqlType="VARCHAR(20)" precision="2000000000" scale="10" nullable="false" jdbcType="12"/>
       <primary-key columns="outcome"/>
-      <exported-key name="#FAKE_leads_call_1" table="leads_call" schema="" catalog="" columns="outcome_id"/>
+      <exported-key name="#FAKE_leads_call_2" table="leads_call" schema="" catalog="" columns="outcome_id"/>
     </table>
     <table name="leads_lead" schema="" catalog="" type="TABLE">
       <column name="id" sqlType="INTEGER" precision="2000000000" scale="10" nullable="false" jdbcType="4"/>
@@ -139,7 +147,7 @@
       <primary-key columns="id"/>
       <foreign-key name="#FAKE_leads_lead_1" columns="status_id" ref-table="leads_leadstatus" ref-schema="" ref-catalog="" ref-columns="status" update-rule="3" delete-rule="3" deferrability="1"/>
       <foreign-key name="#FAKE_leads_lead_2" columns="type_id" ref-table="leads_leadtype" ref-schema="" ref-catalog="" ref-columns="type" update-rule="3" delete-rule="3" deferrability="1"/>
-      <exported-key name="#FAKE_leads_call_2" table="leads_call" schema="" catalog="" columns="lead_id"/>
+      <exported-key name="#FAKE_leads_call_3" table="leads_call" schema="" catalog="" columns="lead_id"/>
       <index name="leads_lead_dc91ed4b" unique="true" columns="status_id"/>
       <index name="leads_lead_94757cae" unique="true" columns="type_id"/>
     </table>

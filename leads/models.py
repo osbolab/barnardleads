@@ -40,7 +40,7 @@ class Lead(models.Model):
     phone2 = models.CharField(blank=True, max_length=20)
     spouse = models.CharField(blank=True, max_length=200)
 
-    dnc = models.BooleanField('Do not call', default=False)
+    dnc = models.BooleanField('do not call', default=False)
     status = models.ForeignKey(LeadStatus, default='Cold')
     type = models.ForeignKey(LeadType, default='Expired')
     notes = models.TextField(blank=True)
@@ -54,6 +54,7 @@ class Lead(models.Model):
 
     def call_count(self):
         return len(Call.objects.filter(lead=self))
+    call_count.short_description = 'calls'
 
     def save(self, *args, **kwargs):
         self.full_clean()

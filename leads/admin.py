@@ -85,7 +85,7 @@ class LeadAdmin(admin.ModelAdmin):
             return [choice for (choice, _) in self.lookup_choices if choice != 'Dead']
 
 
-    list_display = ('status', 'type', 'name', 'phone1', 'phone2', 'spouse', 'notes', 'can_call', 'call_count')
+    list_display = ('status', 'type', 'name', 'phone1', 'phone2', 'spouse', 'notes', 'call_count')
     list_filter = (
         ('status', StatusFieldListFilter),
         ('type', UnionFieldListFilter),
@@ -114,7 +114,11 @@ class CallResource(resources.ModelResource):
 
 class CallAdmin(ExportActionModelAdmin):
     list_display = ('date', 'direction', 'get_name', 'get_phone1', 'get_phone2', 'outcome', 'notes')
-    list_filter = ('direction', 'outcome', 'date')
+    list_filter = (
+        ('direction', UnionFieldListFilter),
+        ('outcome', UnionFieldListFilter),
+        'date'
+    )
     search_fields = ('lead__name', 'lead__phone1', 'lead__phone2', 'notes',)
     resource_class = CallResource
 
