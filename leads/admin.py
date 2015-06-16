@@ -6,6 +6,8 @@ from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ExportActionModelAdmin
 
+from extraadminfilters.filters import UnionFieldListFilter
+
 from .models import LeadType, LeadStatus, Lead, CallDirection, CallOutcome, Call
 
 
@@ -28,18 +30,29 @@ class LeadAdmin(admin.ModelAdmin):
 
         def lookups(self, request, model_admin):
             return (
+                ('all', 'Any date'),
                 ('Today', 'Today'),
-                ('Not today', 'Not today')
+                (None, 'Not today'),
             )
+
+        def choices(self, cl):
+            for lookup, title in self.lookup_choices:
+                yield {
+                    'selected': self.value() == lookup,
+                    'query_string': cl.get_query_string({
+                        self.parameter_name: lookup,
+                    }, []),
+                    'display': title,
+                }
 
         def queryset(self, request, queryset):
             today = datetime.now().date()
             tomorrow = today + timedelta(1)
 
-            if self.value() == 'Today':
-                return queryset.filter(call__date__range=(today, tomorrow)).distinct()
-            if self.value() == 'Not today':
+            if self.value() == None:
                 return queryset.exclude(call__date__range=(today, tomorrow))
+            elif self.value() == 'Today':
+                return queryset.filter(call__date__range=(today, tomorrow)).distinct()
 
     class DncListFilter(admin.SimpleListFilter):
         title = 'callable'
@@ -67,8 +80,19 @@ class LeadAdmin(admin.ModelAdmin):
             if self.value() in qvalues.keys():
                 return queryset.filter(dnc__exact=qvalues[self.value()])
 
+    class StatusFieldListFilter(UnionFieldListFilter):
+        def default_values(self):
+            return [choice for (choice, _) in self.lookup_choices if choice != 'Dead']
+
+
     list_display = ('status', 'type', 'name', 'phone1', 'phone2', 'spouse', 'notes', 'can_call', 'call_count')
-    list_filter = ('status', 'type', 'created', LastCalledListFilter, DncListFilter)
+    list_filter = (
+        ('status', StatusFieldListFilter),
+        ('type', UnionFieldListFilter),
+        LastCalledListFilter,
+        'created',
+        DncListFilter
+    )
     search_fields = ('name', 'phone1', 'phone2', 'spouse', 'notes')
     inlines = (CallInline,)
 
