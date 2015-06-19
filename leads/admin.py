@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from django.contrib import admin
 from django.forms.models import ModelForm
+from django.core.urlresolvers import reverse
 
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
@@ -83,6 +84,7 @@ class LeadAdmin(admin.ModelAdmin):
                 return queryset.filter(call__outcome=self.value()).distinct()
 
     list_display = ('status', 'type', 'name', 'phone1', 'notes', 'call_count')
+    list_display_links = ('name', 'phone1',)
     list_filter = (
         ('status', UnionFieldListFilter),
         ('type', UnionFieldListFilter),
@@ -93,7 +95,6 @@ class LeadAdmin(admin.ModelAdmin):
     )
     search_fields = ('name', 'phone1', 'phone2', 'spouse', 'notes')
     inlines = (CallInline,)
-
 
 
 class CallResource(resources.ModelResource):

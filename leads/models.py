@@ -37,8 +37,8 @@ class LeadStatus(models.Model):
 
 class Lead(models.Model):
     name = models.CharField(max_length=200)
-    phone1 = models.CharField(unique=True, max_length=20)
-    phone2 = models.CharField(blank=True, max_length=20)
+    phone1 = models.CharField('phone', unique=True, max_length=20)
+    phone2 = models.CharField('alt', blank=True, max_length=20)
     spouse = models.CharField(blank=True, max_length=200)
 
     dnc = models.BooleanField('do not call', default=False)
