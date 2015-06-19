@@ -1,0 +1,61 @@
+th, td {
+    font-family: Lato, "Lucida Grande", Verdana, Arial, sans-serif;
+}
+
+table {
+    table-layout: fixed;
+}
+
+td.field-get_name,
+td.field-notes,
+td.field-direction {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th.column-format_date {
+    width: 6em;
+}
+th.field-format_date {
+    font-weight: normal;
+}
+
+th.column-direction {
+    width: 6em;
+}
+
+th.column-outcome {
+    width: 6em;
+}
+
+@media all and (max-width: 800px) {
+    th.column-direction,
+    td.field-direction,
+    th.column-outcome,
+    td.field-outcome {
+        font-size: 8px;
+    }
+    th.column-direction {
+        width: 4em;
+    }
+    th.column-outcome {
+        width: 6.5em;
+    }
+}
+
+th.column-get_name {
+    width: 20%;
+}
+
+th.column-get_phone1 {
+    width: 8em;
+}
+
+td.field-get_phone1 {
+    white-space: nowrap;
+}
+
+th.column-notes {
+    width: 50%;
+}

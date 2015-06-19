@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.template.defaultfilters import truncatechars
 import phonenumbers
 
 
@@ -56,6 +57,14 @@ class Lead(models.Model):
         return len(Call.objects.filter(lead=self))
     call_count.short_description = 'calls'
 
+    def short_name(self):
+        return truncatechars(self.name, 20)
+    short_name.short_description = 'name'
+
+    def short_notes(self):
+        return truncatechars(self.notes, 20)
+    short_notes.short_description = 'notes'
+
     def save(self, *args, **kwargs):
         self.full_clean()
         super(Lead, self).save(*args, **kwargs)
@@ -94,7 +103,7 @@ class CallDirection(models.Model):
 
 class Call(models.Model):
     lead = models.ForeignKey(Lead)
-    direction = models.ForeignKey(CallDirection, default='Outgoing')
+    direction = models.ForeignKey(CallDirection, default='Outgoing', verbose_name='^/v')
     outcome = models.ForeignKey(CallOutcome, default='Missed')
     date = models.DateTimeField('placed', default=timezone.now)
     scheduled = models.DateTimeField('rescheduled to', blank=True, null=True, default=None)

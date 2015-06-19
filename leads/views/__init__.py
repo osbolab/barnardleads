@@ -1,9 +1,8 @@
 from django.views.generic import TemplateView
 from chartjs.views.lines import BaseLineChartView
-from django.shortcuts import render
 from random import randint
 
-from .models import Call
+from .followup import *
 
 
 class LineChartJSONView(BaseLineChartView):
@@ -18,9 +17,3 @@ class LineChartJSONView(BaseLineChartView):
 
 line_chart = TemplateView.as_view(template_name='leads/line_chart.html')
 line_chart_json = LineChartJSONView.as_view()
-
-
-def list_calls(request):
-    calls_list = Call.objects.all()
-    context = {'calls_list': calls_list}
-    return render(request, 'leads/calls_audit.html', context)

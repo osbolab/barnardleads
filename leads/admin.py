@@ -24,35 +24,30 @@ class CallInline(admin.TabularInline):
 
 
 class LeadAdmin(admin.ModelAdmin):
+    class Media:
+        css = {'all': ('admin/css/lead_list.css',)}
+
     class LastCalledListFilter(admin.SimpleListFilter):
         title = 'last called'
         parameter_name = 'last_called'
 
         def lookups(self, request, model_admin):
             return (
-                ('all', 'Any date'),
                 ('Today', 'Today'),
-                (None, 'Not today'),
+                ('Not today', 'Not today'),
+                ('Never', 'Never')
             )
-
-        def choices(self, cl):
-            for lookup, title in self.lookup_choices:
-                yield {
-                    'selected': self.value() == lookup,
-                    'query_string': cl.get_query_string({
-                        self.parameter_name: lookup,
-                    }, []),
-                    'display': title,
-                }
 
         def queryset(self, request, queryset):
             today = datetime.now().date()
             tomorrow = today + timedelta(1)
 
-            if self.value() == None:
+            if self.value() == 'Not today':
                 return queryset.exclude(call__date__range=(today, tomorrow))
             elif self.value() == 'Today':
                 return queryset.filter(call__date__range=(today, tomorrow)).distinct()
+            elif self.value() == 'Never':
+                return queryset.filter(call=None)
 
     class DncListFilter(admin.SimpleListFilter):
         title = 'callable'
@@ -60,36 +55,39 @@ class LeadAdmin(admin.ModelAdmin):
 
         def lookups(self, request, model_admin):
             return (
-                (None, 'Not on DNC'),
-                ('yes', 'Do not call'),
-                ('all', 'All'),
+                ('0', 'Not on DNC'),
+                ('1', 'Do not call'),
             )
 
-        def choices(self, cl):
-            for lookup, title in self.lookup_choices:
-                yield {
-                    'selected': self.value() == lookup,
-                    'query_string': cl.get_query_string({
-                        self.parameter_name: lookup,
-                    }, []),
-                    'display': title,
-                }
+        def queryset(self, request, queryset):
+            if self.value() in ('0', '1'):
+                return queryset.filter(dnc__exact=self.value())
+
+    class CallStatusListFilter(admin.SimpleListFilter):
+        title = 'contact status'
+        parameter_name = 'contact_status'
+
+        def lookups(self, request, model_admin):
+            return (
+                ('not', 'Not connected'),
+                ('Voicemail', 'Voicemailed'),
+                ('Connected', 'Connected')
+            )
 
         def queryset(self, request, queryset):
-            qvalues = {None: '0', 'yes': '1'}
-            if self.value() in qvalues.keys():
-                return queryset.filter(dnc__exact=qvalues[self.value()])
+            if self.value() is None:
+                return
+            elif self.value() == 'not':
+                return queryset.exclude(call__outcome='Connected')
+            else:
+                return queryset.filter(call__outcome=self.value()).distinct()
 
-    class StatusFieldListFilter(UnionFieldListFilter):
-        def default_values(self):
-            return [choice for (choice, _) in self.lookup_choices if choice != 'Dead']
-
-
-    list_display = ('status', 'type', 'name', 'phone1', 'phone2', 'spouse', 'notes', 'call_count')
+    list_display = ('status', 'type', 'name', 'phone1', 'notes', 'call_count')
     list_filter = (
-        ('status', StatusFieldListFilter),
+        ('status', UnionFieldListFilter),
         ('type', UnionFieldListFilter),
         LastCalledListFilter,
+        CallStatusListFilter,
         'created',
         DncListFilter
     )
@@ -113,7 +111,10 @@ class CallResource(resources.ModelResource):
 
 
 class CallAdmin(ExportActionModelAdmin):
-    list_display = ('date', 'direction', 'get_name', 'get_phone1', 'get_phone2', 'outcome', 'notes')
+    class Media:
+        css = {'all': ('admin/css/call_list.css',)}
+
+    list_display = ('format_date', 'direction', 'get_name', 'get_phone1', 'outcome', 'notes')
     list_filter = (
         ('direction', UnionFieldListFilter),
         ('outcome', UnionFieldListFilter),
@@ -122,21 +123,20 @@ class CallAdmin(ExportActionModelAdmin):
     search_fields = ('lead__name', 'lead__phone1', 'lead__phone2', 'notes',)
     resource_class = CallResource
 
+    def format_date(self, call):
+        return call.date.strftime('%x')
+    format_date.short_description = 'placed'
+    format_date.admin_order_field = 'date'
+
     def get_name(self, call):
         return call.lead.name
-    get_name.short_description = 'Name'
+    get_name.short_description = 'name'
     get_name.admin_order_field = 'lead__name'
 
     def get_phone1(self, call):
         return call.lead.phone1
-    get_phone1.short_description = 'Phone'
+    get_phone1.short_description = 'phone'
     get_phone1.admin_order_field = 'lead__phone1'
-
-    def get_phone2(self, call):
-        return call.lead.phone2
-    get_phone2.short_description = 'Alt.'
-    get_phone2.admin_order_field = 'lead__phone2'
-
 
 
 admin.site.register(Lead, LeadAdmin)

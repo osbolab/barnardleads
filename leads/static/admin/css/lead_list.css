@@ -1,0 +1,58 @@
+th, td {
+    font-family: Lato, "Lucida Grande", Verdana, Arial, sans-serif;
+}
+
+table {
+    table-layout: fixed;
+}
+
+td.field-name,
+td.field-notes,
+td.field-spouse {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+th.column-status {
+    width: 3.5em;
+}
+th.field-status {
+    font-weight: normal;
+}
+th.column-type {
+    width: 3.5em;
+}
+
+@media all and (max-width: 800px) {
+    th.column-type,
+    td.field-type {
+        font-size: 8px;
+        width: 4em;
+    }
+    th.column-status,
+    th.field-status{
+        width: 3em;
+        font-size: 8px;
+    }
+}
+
+th.column-name {
+    width: 20%;
+}
+
+th.column-phone1 {
+    width: 6.5em;
+}
+
+td.field-phone1 {
+    white-space: nowrap;
+}
+
+th.column-notes {
+    width: 30%;
+}
+
+th.column-call_count {
+    width: 3em;
+}
