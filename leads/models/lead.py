@@ -2,8 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import truncatechars
 
-from leads.phones import format_phone
-
+from leads.models.phoneformat import format_phone
 from . import app_label, LeadStatus, LeadType
 
 

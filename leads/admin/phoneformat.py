@@ -1,13 +1,6 @@
 import phonenumbers
 
 
-def format_phone(phone):
-    if phone:
-        return phonenumbers.format_number(phonenumbers.parse(phone.strip(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-    else:
-        return ''
-
-
 def generify_phone_search(search_term):
     try:
         phone_number = phonenumbers.parse(search_term.strip(), 'US')
