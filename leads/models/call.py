@@ -12,7 +12,7 @@ class Call(models.Model):
     lead = models.ForeignKey(Lead)
     direction = models.ForeignKey(CallDirection, db_index=True, default='Outgoing', verbose_name='^/v')
     outcome = models.ForeignKey(CallOutcome, db_index=True, default='Missed')
-    date = models.DateTimeField('placed', db_index=True, auto_now_add=True)
+    date = models.DateTimeField('placed', db_index=True, default=timezone.now)
     scheduled = models.DateTimeField('rescheduled to', db_index=True, blank=True, null=True, default=None)
     notes = models.TextField(blank=True)
 

@@ -22,6 +22,7 @@ class InlineCallAdmin(TabularInline):
     model = Call
     extra = 0
     form = AlwaysChangedModelForm
+    template = 'admin/leads/tabular_inline_call_edit.html'
 
 
 class CallResource(resources.ModelResource):

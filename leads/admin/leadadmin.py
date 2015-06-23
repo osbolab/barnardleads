@@ -24,15 +24,19 @@ class LastCalledListFilter(SimpleListFilter):
         )
 
     def queryset(self, request, queryset):
-        today = datetime.now().date()
-        tomorrow = today + timedelta(1)
-
-        if self.value() == 'Not today':
-            return queryset.exclude(call__date__range=(today, tomorrow))
-        elif self.value() == 'Today':
-            return queryset.filter(call__date__range=(today, tomorrow)).distinct()
-        elif self.value() == 'Never':
+        if self.value() == 'Never':
             return queryset.filter(call=None)
+        else:
+            today = datetime.now().date()
+            tomorrow = today + timedelta(1)
+            outgoing_calls_today = {
+                'call__direction__direction': 'Outgoing',
+                'call__date__range': (today, tomorrow)
+            }
+            if self.value() == 'Not today':
+                return queryset.exclude(**outgoing_calls_today)
+            elif self.value() == 'Today':
+                return queryset.filter(**outgoing_calls_today).distinct()
 
 
 class DncListFilter(SimpleListFilter):
