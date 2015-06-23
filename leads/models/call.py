@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
-from . import app_label, CallDirection, CallOutcome, Lead
+from . import CallDirection, CallOutcome, Lead
 
 
 def prettify_datetime(dt):
@@ -9,9 +9,6 @@ def prettify_datetime(dt):
         return str(dt.date()) + ' at ' + dt.time().strftime('%I:%M %p')
 
 class Call(models.Model):
-    class Meta:
-        app_label = app_label
-
     lead = models.ForeignKey(Lead)
     direction = models.ForeignKey(CallDirection, default='Outgoing', verbose_name='^/v')
     outcome = models.ForeignKey(CallOutcome, default='Missed')

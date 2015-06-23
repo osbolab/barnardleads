@@ -3,16 +3,13 @@ from django.utils import timezone
 from django.template.defaultfilters import truncatechars
 
 from leads.models.phoneformat import format_phone
-from . import app_label, LeadStatus, LeadType
+from . import LeadStatus, LeadType
 
 
 def format_name(name):
     return name.strip().title()
 
 class Lead(models.Model):
-    class Meta:
-        app_label = app_label
-
     name = models.CharField(max_length=200)
     phone1 = models.CharField('phone', unique=True, max_length=20)
     phone2 = models.CharField('alt', blank=True, max_length=20)

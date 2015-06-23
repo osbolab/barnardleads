@@ -1,5 +1,3 @@
-app_label = 'leads'
-
 from .leadstatus import LeadStatus
 from .leadtype import LeadType
 from .lead import Lead
