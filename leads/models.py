@@ -1,18 +1,13 @@
 from django.db import models
 from django.utils import timezone
 from django.template.defaultfilters import truncatechars
-import phonenumbers
+
+from .phones import format_phone
 
 
 def prettify_datetime(dt):
     dt = timezone.localtime(dt)
     return str(dt.date()) + ' at ' + dt.time().strftime('%I:%M %p')
-
-def format_phone(phone):
-    if phone:
-        return phonenumbers.format_number(phonenumbers.parse(phone.strip(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-    else:
-        return ''
 
 def format_name(name):
     return name.strip().title()

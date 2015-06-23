@@ -7,11 +7,10 @@ from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
 from import_export.admin import ExportActionModelAdmin
 
-import phonenumbers
-
 from extraadminfilters.filters import UnionFieldListFilter
 
 from .models import LeadType, LeadStatus, Lead, CallDirection, CallOutcome, Call
+from .phones import generify_phone_search
 
 
 class AlwaysChangedModelForm(ModelForm):
@@ -99,13 +98,7 @@ class LeadAdmin(admin.ModelAdmin):
     inlines = (CallInline,)
 
     def get_search_results(self, request, queryset, search_term):
-        try:
-            phone_number = phonenumbers.parse(search_term.strip(), 'US')
-            if phonenumbers.is_possible_number(phone_number):
-                search_term = phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.NATIONAL)
-        except phonenumbers.NumberParseException:
-            pass
-
+        search_term = generify_phone_search(search_term)
         return super(LeadAdmin, self).get_search_results(request, queryset, search_term)
 
 
@@ -135,6 +128,10 @@ class CallAdmin(ExportActionModelAdmin):
     )
     search_fields = ('lead__name', 'lead__phone1', 'lead__phone2', 'notes',)
     resource_class = CallResource
+
+    def get_search_results(self, request, queryset, search_term):
+        search_term = generify_phone_search(search_term)
+        return super(CallAdmin, self).get_search_results(request, queryset, search_term)
 
     def format_date(self, call):
         return call.date.strftime('%x')
