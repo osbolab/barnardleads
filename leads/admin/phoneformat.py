@@ -7,4 +7,6 @@ def generify_phone_search(search_term):
         if phonenumbers.is_possible_number(phone_number):
             return phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.NATIONAL)
     except phonenumbers.NumberParseException:
-        return search_term
+        pass
+
+    return search_term

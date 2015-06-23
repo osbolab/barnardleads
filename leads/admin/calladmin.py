@@ -42,6 +42,8 @@ class CallAdmin(ExportActionModelAdmin):
     class Media:
         css = {'all': ('admin/css/call_list.css',)}
 
+    resource_class = CallResource
+
     list_display = ('format_date', 'direction', 'get_name', 'get_phone1', 'outcome', 'notes')
     list_filter = (
         ('direction', UnionFieldListFilter),
@@ -49,7 +51,6 @@ class CallAdmin(ExportActionModelAdmin):
         'date'
     )
     search_fields = ('lead__name', 'lead__phone1', 'lead__phone2', 'notes',)
-    resource_class = CallResource
 
     def get_search_results(self, request, queryset, search_term):
         search_term = generify_phone_search(search_term)

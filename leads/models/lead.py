@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 from django.template.defaultfilters import truncatechars
 
 from leads.models.phoneformat import format_phone
@@ -10,17 +9,17 @@ def format_name(name):
     return name.strip().title()
 
 class Lead(models.Model):
-    name = models.CharField(max_length=200)
-    phone1 = models.CharField('phone', unique=True, max_length=20)
-    phone2 = models.CharField('alt', blank=True, max_length=20)
+    name = models.CharField(db_index=True, max_length=200)
+    phone1 = models.CharField('phone', db_index=True, unique=True, max_length=20)
+    phone2 = models.CharField('alt', db_index=True, blank=True, max_length=20)
     spouse = models.CharField(blank=True, max_length=200)
 
-    dnc = models.BooleanField('do not call', default=False)
-    status = models.ForeignKey(LeadStatus, default='Cold')
-    type = models.ForeignKey(LeadType, default='Expired')
+    dnc = models.BooleanField('do not call', db_index=True, default=False)
+    status = models.ForeignKey(LeadStatus, db_index=True, default='Cold')
+    type = models.ForeignKey(LeadType, db_index=True, default='Expired')
     notes = models.TextField(blank=True)
 
-    created = models.DateTimeField('discovered', default=timezone.now)
+    created = models.DateTimeField('discovered', auto_now_add=True)
 
     def can_call(self):
         return not self.dnc
